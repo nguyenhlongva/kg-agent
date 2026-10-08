@@ -67,6 +67,10 @@ Cập nhật phiên bản mới: chép mã mới đè lên rồi chạy `docker 
 
 ## Chạy thử trên máy
 
+Cách nhanh nhất (cần Python 3.11+): bấm đúp `run-local.command` (macOS) hoặc `run-local.bat` (Windows). Lần đầu file tự tạo `.venv`, cài thư viện và tạo `.env.local` (không commit). Sau đó trình duyệt tự mở `http://localhost:8000/user/`, trang quản trị đăng nhập bằng `admin` / `matkhau123`. Sửa code trong `app/` thì server tự tải lại, chỉ cần F5. Muốn bật AI thì dán key vào `ANTHROPIC_API_KEY` trong `.env.local` rồi chạy lại.
+
+Hoặc chạy tay:
+
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt

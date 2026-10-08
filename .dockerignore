@@ -4,3 +4,6 @@ backups
 tests
 __pycache__
 .pytest_cache
+.env.local
+.venv
+run-local.*
