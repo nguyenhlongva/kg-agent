@@ -4,6 +4,7 @@ rem Sửa code trong app\ thì server tự tải lại, chỉ cần F5 trình du
 chcp 65001 >nul
 cd /d "%~dp0"
 where python >nul 2>nul || (echo Chua co Python. Cai Python 3.11+ tu https://www.python.org/downloads/ ^(tick "Add python.exe to PATH"^) roi chay lai. & pause & exit /b 1)
+python -c "import sys; sys.exit(sys.version_info < (3, 10))" || (echo Can Python 3.10 tro len. Cai ban moi tu https://www.python.org/downloads/ & pause & exit /b 1)
 if not exist .venv python -m venv .venv
 call .venv\Scripts\activate.bat
 echo Dang cai thu vien (lan dau mat 1-2 phut)...

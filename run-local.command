@@ -5,6 +5,10 @@ set -e
 cd "$(dirname "$0")"
 PY="$(command -v python3 || command -v python || true)"
 if [ -z "$PY" ]; then echo "Chưa có Python. Cài Python 3.11+ từ https://www.python.org/downloads/ rồi chạy lại."; read -r _; exit 1; fi
+if ! "$PY" -c 'import sys; sys.exit(sys.version_info < (3, 10))'; then
+  echo "Python hiện tại là $("$PY" --version 2>&1), app cần 3.10 trở lên."
+  echo "Cài bản mới từ https://www.python.org/downloads/ rồi chạy lại file này."; read -r _; exit 1
+fi
 [ -d .venv ] || "$PY" -m venv .venv
 . .venv/bin/activate
 echo "Đang cài thư viện (lần đầu mất 1-2 phút)..."
