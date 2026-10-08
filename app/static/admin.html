@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Quản trị · Trợ lý tri thức</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/app.css">
+<style>
+body{overflow:hidden}
+.admin{display:flex;flex-direction:column;height:100%}
+.top{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding:10px 18px;border-bottom:1px solid var(--line);background:var(--surface)}
+.top .brandrow{margin-right:auto}
+nav{display:flex;gap:4px;background:var(--bg);border-radius:10px;padding:3px;overflow-x:auto}
+nav button{border:0;background:none;padding:6px 13px;border-radius:8px;color:var(--muted);font-weight:500;font-size:14px;white-space:nowrap}
+nav button[aria-selected="true"]{background:var(--surface);color:var(--blue);box-shadow:0 0 0 1px var(--line)}
+nav .count{background:var(--warn);color:#fff;border-radius:999px;font-size:11px;padding:0 6px;margin-left:4px}
+.acct{display:flex;align-items:center;gap:10px;font-size:14px}
+.asec{flex:1;min-height:0;display:flex}
+.inbox{display:flex;flex:1;min-height:0}
+.ilist{width:350px;flex:none;border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0;background:var(--surface)}
+.ihead{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px;font-weight:500;color:var(--ink)}
+.switch small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.tog{appearance:none;width:42px;height:24px;border-radius:999px;background:var(--line);position:relative;flex:none;cursor:pointer;transition:background .15s;margin:0}
+.tog::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .15s}
+.tog:checked{background:var(--ok)}.tog:checked::after{transform:translateX(18px)}
+.search{border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:var(--bg);width:100%}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters button{border:1px solid var(--line);background:none;border-radius:999px;padding:3px 10px;font-size:13px;color:var(--muted)}
+.filters button[aria-pressed="true"]{background:var(--blue-soft);color:var(--blue);border-color:transparent}
+.iitems{flex:1;min-height:0;overflow-y:auto}
+.iitem{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:11px 14px}
+.iitem:hover{background:var(--bg)}.iitem[aria-current="true"]{background:var(--blue-soft)}
+.iitem .r1{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.iitem .nm{font-weight:600;color:var(--ink);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.iitem .r2{font-weight:500;font-size:14px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.iitem .r3{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.iitem .r4{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.ithread{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0}
+.ihdr{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid var(--line);background:var(--surface);min-height:56px}
+.ihdr .who2{flex:1;min-width:160px}
+.ihdr .who2 b{display:block;font-weight:600;line-height:1.3}
+.ihdr .who2 span{font-size:13px;color:var(--muted)}
+.ihdr select{border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:5px 8px;font-size:13px}
+.aiempty{margin:auto;color:var(--muted);text-align:center;padding:30px}
+.acomp{border-top:1px solid var(--line);background:var(--surface);padding:10px 18px}
+.acomp textarea{width:100%;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--bg);min-height:64px;max-height:240px}
+.acomp .row{display:flex;gap:8px;justify-content:flex-end;align-items:center;margin-top:8px;flex-wrap:wrap}
+.acomp .row .note{margin:0 auto 0 0}
+.pad{flex:1;min-height:0;overflow-y:auto;padding:4px 18px 24px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin:14px auto;max-width:980px}
+.panel h2{margin:0 0 4px;font-size:17px;font-weight:600}
+.panel > p{margin:0 0 14px;color:var(--muted);font-size:14px}
+.phead{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.phead .search{max-width:320px;flex:1}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--muted);margin-bottom:12px}
+.drop.over{border-color:var(--blue);background:var(--blue-soft)}
+.drop strong{color:var(--ink)}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.progress{font-size:13px;color:var(--muted)}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:500;font-size:13px;white-space:nowrap}
+td code,td small{font-size:12px;color:var(--muted)}
+td .btns{display:flex;gap:6px;flex-wrap:wrap}
+.stats{display:flex;gap:10px;flex-wrap:wrap;max-width:980px;margin:14px auto 0}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;min-width:130px}
+.stat b{display:block;font-size:20px;font-weight:600}.stat span{font-size:13px;color:var(--muted)}
+dialog{border:1px solid var(--line);border-radius:16px;padding:22px;background:var(--surface);color:var(--ink);width:min(440px,92vw)}
+dialog::backdrop{background:rgba(10,20,35,.4)}
+dialog h3{margin:0 0 14px;font-size:17px;font-weight:600}
+dialog form{display:flex;flex-direction:column;gap:12px}
+dialog .row{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
+@media (max-width:820px){
+  .ilist{width:100%;border-right:0}
+  .inbox.has-sel .ilist{display:none}
+  .inbox:not(.has-sel) .ithread{display:none}
+  nav{order:3;width:100%}
+}
+@media (min-width:821px){#backBtn{display:none}}
+@media (prefers-reduced-motion:reduce){.tog,.tog::after{transition:none}}
+</style>
+</head>
+<body>
+<!-- Đăng nhập quản trị -->
+<div class="authwrap" id="loginView" hidden>
+  <div class="authcard">
+    <div class="brandrow"><div class="mark" aria-hidden="true">KB</div><b class="appName">Trợ lý tri thức</b><span class="pill info">Quản trị</span></div>
+    <h1>Đăng nhập quản trị</h1>
+    <p>Chỉ dành cho nhân viên vận hành trợ lý.</p>
+    <form id="loginForm">
+      <label>Tên đăng nhập<input id="lUser" autocomplete="username" required></label>
+      <label>Mật khẩu<input id="lPass" type="password" autocomplete="current-password" required></label>
+      <button class="btn block" id="lBtn">Đăng nhập</button>
+      <div class="err" id="lErr" role="alert"></div>
+    </form>
+  </div>
+</div>
+
+<div class="admin" id="adminView" hidden>
+  <header class="top">
+    <div class="brandrow"><div class="mark" aria-hidden="true">KB</div><b class="appName">Trợ lý tri thức</b><span class="pill info">Quản trị</span></div>
+    <nav id="tabs" role="tablist">
+      <button role="tab" data-tab="inbox" aria-selected="true">Hộp thư<span class="count" id="humanCount" hidden></span></button>
+      <button role="tab" data-tab="users" aria-selected="false">Người dùng</button>
+      <button role="tab" data-tab="docs" aria-selected="false">Kiến thức</button>
+      <button role="tab" data-tab="admins" aria-selected="false">Quản trị viên</button>
+      <button role="tab" data-tab="settings" aria-selected="false">Cài đặt</button>
+    </nav>
+    <div class="acct"><span id="meName"></span><button class="link" id="pwBtn">Đổi mật khẩu</button><button class="link" id="logoutBtn">Đăng xuất</button></div>
+  </header>
+  <div id="banner" class="banner" hidden></div>
+
+  <!-- Hộp thư -->
+  <section class="asec" id="t-inbox">
+    <div class="inbox" id="inbox">
+      <div class="ilist">
+        <div class="ihead">
+          <label class="switch"><span>AI tự trả lời<small>Áp dụng cho cuộc trò chuyện để chế độ mặc định</small></span><input type="checkbox" class="tog" id="gAi"></label>
+          <input class="search" id="iSearch" placeholder="Tìm theo tên, số điện thoại, nội dung" aria-label="Tìm cuộc trò chuyện">
+          <div class="filters" id="iFilters">
+            <button data-f="all" aria-pressed="true">Tất cả</button>
+            <button data-f="human" aria-pressed="false">Cần nhân viên</button>
+            <button data-f="off" aria-pressed="false">AI đang tắt</button>
+          </div>
+        </div>
+        <div class="iitems" id="iItems"></div>
+      </div>
+      <div class="ithread">
+        <div class="ihdr" id="iHdr" hidden>
+          <button class="iconbtn" id="backBtn" aria-label="Về danh sách">‹</button>
+          <div class="who2"><b id="iName"></b><span id="iSub"></span></div>
+          <label class="inline" style="font-size:13px;color:var(--muted)">AI trả lời
+            <select id="iMode"><option value="auto">Theo mặc định</option><option value="on">Bật</option><option value="off">Tắt</option></select>
+          </label>
+          <button class="btn small ghost" id="iDone" hidden>Đánh dấu đã xử lý</button>
+          <button class="btn small danger" id="iDel">Xóa</button>
+        </div>
+        <div class="pad" id="aScroll"><div class="thread" id="aThread"><div class="aiempty">Chọn một cuộc trò chuyện để xem và trả lời.</div></div></div>
+        <div class="acomp" id="aComp" hidden>
+          <textarea id="aq" placeholder="Trả lời người dùng với tư cách nhân viên hỗ trợ… (Ctrl+Enter để gửi)" aria-label="Trả lời tay" maxlength="8000"></textarea>
+          <div class="row">
+            <span class="note" id="aNote"></span>
+            <button class="btn small ghost" id="aSuggest">Gợi ý bằng AI</button>
+            <button class="btn small" id="aSend">Gửi trả lời</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Người dùng -->
+  <section class="asec" id="t-users" hidden>
+    <div class="pad">
+      <div class="stats" id="stats"></div>
+      <div class="panel">
+        <h2>Người dùng</h2>
+        <p>Người dùng tự đăng ký bằng tên Zalo và số điện thoại khi mở link. Bạn có thể thêm trước, sửa, khóa hoặc xóa.</p>
+        <div class="phead"><input class="search" id="uSearch" placeholder="Tìm theo tên hoặc số điện thoại"><button class="btn small" id="uAdd">Thêm người dùng</button></div>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Tên Zalo</th><th>Số điện thoại</th><th>Ghi chú</th><th>Trò chuyện</th><th>Hoạt động</th><th>Trạng thái</th><th></th></tr></thead>
+          <tbody id="uRows"></tbody>
+        </table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Kiến thức -->
+  <section class="asec" id="t-docs" hidden>
+    <div class="pad">
+      <div class="panel">
+        <h2>Nạp kiến thức</h2>
+        <p>Hỗ trợ .txt, .md, .docx, .pdf (PDF dạng ảnh scan cần OCR trước). Nạp lại cùng mã tài liệu sẽ thay bản cũ.</p>
+        <div class="drop" id="drop">
+          <strong>Kéo thả file vào đây</strong> hoặc <button class="btn small ghost" id="pickBtn">Chọn file</button>
+          <input type="file" id="fileIn" multiple accept=".txt,.md,.markdown,.docx,.pdf" hidden>
+          <div id="picked" class="note"></div>
+        </div>
+        <div class="grid">
+          <label>Mã tài liệu<input id="fDocId" placeholder="Tự tạo từ tên file"></label>
+          <label>Tiêu đề<input id="fTitle" placeholder="Tự lấy tên file"></label>
+          <label>Phạm vi<input id="fScope" value="chung"></label>
+          <label>Phiên bản<input id="fVersion" type="number" min="1" value="1"></label>
+        </div>
+        <div class="actions"><button class="btn" id="ingestBtn" disabled>Nạp tài liệu</button><span class="progress" id="ingestProg"></span></div>
+        <p class="note">Khi chọn nhiều file, mã tài liệu và tiêu đề được lấy từ tên từng file.</p>
+      </div>
+      <div class="panel">
+        <h2>Tài liệu đã nạp</h2>
+        <p id="docSummary">Chưa có tài liệu.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Tiêu đề</th><th>Phạm vi</th><th>Bản</th><th>Đoạn</th><th>Cập nhật</th><th></th></tr></thead>
+          <tbody id="docRows"></tbody>
+        </table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quản trị viên -->
+  <section class="asec" id="t-admins" hidden>
+    <div class="pad">
+      <div class="panel">
+        <h2>Quản trị viên</h2>
+        <p>Tài khoản đăng nhập trang /admin/. Mọi quản trị viên có cùng quyền.</p>
+        <div class="phead"><button class="btn small" id="aAdd">Thêm quản trị viên</button></div>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Tên đăng nhập</th><th>Tên hiển thị</th><th>Đăng nhập gần nhất</th><th>Trạng thái</th><th></th></tr></thead>
+          <tbody id="adRows"></tbody>
+        </table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cài đặt -->
+  <section class="asec" id="t-settings" hidden>
+    <div class="pad">
+      <div class="panel">
+        <h2>Cài đặt</h2>
+        <p>Áp dụng cho mọi người dùng.</p>
+        <div class="grid">
+          <label>Tên trợ lý<input id="sName" maxlength="60"></label>
+          <label>Ngưỡng độ khớp (0 đến 1)<input id="sThreshold" type="number" step="0.05" min="0" max="1"></label>
+          <label>Số đoạn đưa vào ngữ cảnh<input id="sTopK" type="number" min="1" max="12"></label>
+        </div>
+        <label style="margin-top:12px">Lời chào trên màn hình đầu<textarea id="sWelcome" rows="2"></textarea></label>
+        <label style="margin-top:12px">Gợi ý câu hỏi (mỗi dòng một câu, tối đa 6)<textarea id="sSuggest" rows="3"></textarea></label>
+        <label style="margin-top:12px">Câu khi không đủ căn cứ<textarea id="sEscalate" rows="2"></textarea></label>
+        <label style="margin-top:12px">Câu khi AI đang tắt<textarea id="sWait" rows="2"></textarea></label>
+        <label style="margin-top:12px">Câu khi AI gặp lỗi<textarea id="sAiError" rows="2"></textarea></label>
+        <div class="actions"><button class="btn" id="saveSettings">Lưu cài đặt</button><span class="progress" id="settingsProg"></span></div>
+        <p class="note">Ngưỡng là tỷ lệ từ khóa của câu hỏi xuất hiện trong đoạn khớp nhất. Dưới ngưỡng thì không gọi AI mà chuyển nhân viên.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<dialog id="dlg"><h3 id="dlgTitle"></h3><form id="dlgForm" method="dialog"><div id="dlgBody"></div><div class="err" id="dlgErr"></div>
+  <div class="row"><button class="btn ghost small" value="cancel" formnovalidate>Hủy</button><button class="btn small" id="dlgOk" value="ok">Lưu</button></div></form></dialog>
+<div class="toast" id="toast" hidden></div>
+
+<script src="/static/common.js"></script>
+<script>
+(() => {
+"use strict";
+const S = { me: null, cfg: {}, convs: [], filter: "all", q: "", sel: null, conv: null, msgs: [], lastId: 0, users: [], docs: [], admins: [], files: [] };
+
+/* ---------- Đăng nhập ---------- */
+function showLogin(){ $("loginView").hidden = false; $("adminView").hidden = true; $("lUser").focus(); }
+function showApp(){ $("loginView").hidden = true; $("adminView").hidden = false; $("meName").textContent = S.me.display_name || S.me.username; loadAll(); }
+$("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault(); $("lErr").textContent = ""; $("lBtn").disabled = true;
+  try{ S.me = await api("/api/admin/login", { method: "POST", body: { username: $("lUser").value, password: $("lPass").value } }); $("lPass").value = ""; showApp(); }
+  catch(err){ $("lErr").textContent = err.message; }
+  $("lBtn").disabled = false;
+});
+$("logoutBtn").onclick = async () => { try{ await api("/api/admin/logout", { method: "POST" }); }catch(e){} location.reload(); };
+async function guard(fn){ try{ return await fn(); }catch(e){ if (e.status === 401){ showLogin(); return; } toast(e.message); throw e; } }
+
+/* ---------- Hộp thoại dùng chung ---------- */
+function dialog(title, fieldsHtml, onOk, okLabel = "Lưu"){
+  $("dlgTitle").textContent = title; $("dlgBody").innerHTML = fieldsHtml; $("dlgErr").textContent = ""; $("dlgOk").textContent = okLabel;
+  const d = $("dlg"); d.showModal();
+  $("dlgForm").onsubmit = async (e) => {
+    if (e.submitter && e.submitter.value === "cancel") return;
+    e.preventDefault(); $("dlgOk").disabled = true;
+    try{ await onOk(); d.close(); }catch(err){ if (err.status === 401) { d.close(); showLogin(); } else $("dlgErr").textContent = err.message; }
+    $("dlgOk").disabled = false;
+  };
+}
+$("pwBtn").onclick = () => dialog("Đổi mật khẩu",
+  `<label>Mật khẩu hiện tại<input type="password" id="pw0" autocomplete="current-password" required></label>
+   <label>Mật khẩu mới (ít nhất 8 ký tự)<input type="password" id="pw1" autocomplete="new-password" minlength="8" required></label>`,
+  async () => { await api("/api/admin/me/password", { method: "POST", body: { current_password: $("pw0").value, new_password: $("pw1").value } }); toast("Đã đổi mật khẩu."); });
+
+/* ---------- Tabs ---------- */
+$("tabs").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-tab]"); if (!b) return;
+  for (const x of $("tabs").querySelectorAll("button")) x.setAttribute("aria-selected", String(x === b));
+  for (const t of ["inbox","users","docs","admins","settings"]) $("t-" + t).hidden = t !== b.dataset.tab;
+  ({ users: loadUsers, docs: loadDocs, admins: loadAdmins, settings: loadSettings, inbox: loadConvs })[b.dataset.tab]();
+});
+async function loadAll(){ await loadSettings(); loadConvs(); }
+
+/* ---------- Hộp thư ---------- */
+async function loadConvs(){
+  const qs = new URLSearchParams({ filter: S.filter, q: S.q });
+  const list = await guard(() => api("/api/admin/conversations?" + qs)); if (!list) return;
+  S.convs = list; renderConvs();
+  const hc = list.filter(c => c.needs_human).length;
+  if (S.filter === "all" && !S.q){ $("humanCount").hidden = !hc; $("humanCount").textContent = hc; }
+}
+const seenA = () => { try{ return JSON.parse(localStorage.getItem("kb_seen_admin") || "{}"); }catch(e){ return {}; } };
+function markSeenA(id){ try{ const s = seenA(); s[id] = Date.now(); localStorage.setItem("kb_seen_admin", JSON.stringify(s)); }catch(e){} }
+function renderConvs(){
+  const s = seenA();
+  $("iItems").innerHTML = S.convs.length ? S.convs.map(c => {
+    const unread = c.last_role === "user" && c.updated_at > (s[c.id] || 0) && c.id !== S.sel;
+    return `<button class="iitem" data-id="${c.id}" ${c.id === S.sel ? 'aria-current="true"' : ""}>
+      <div class="r1">${unread ? '<span class="dot"></span>' : ""}<span class="nm">${esc(c.zalo_name)}</span><span>${timeAgo(c.updated_at)}</span></div>
+      <div class="r2">${esc(c.title || "Cuộc trò chuyện")}</div>
+      <div class="r3">${c.last_role === "agent" ? "Nhân viên: " : c.last_role === "ai" ? "AI: " : ""}${esc(c.last_text)}</div>
+      <div class="r4">${c.needs_human ? '<span class="pill warn">Cần nhân viên</span>' : ""}${!c.ai_active ? '<span class="pill agent">AI tắt</span>' : ""}${c.hidden_by_user ? '<span class="pill info">Người dùng đã ẩn</span>' : ""}</div></button>`;
+  }).join("") : '<p class="note" style="padding:14px">Không có cuộc trò chuyện nào.</p>';
+}
+$("iFilters").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-f]"); if (!b) return; S.filter = b.dataset.f;
+  for (const x of $("iFilters").children) x.setAttribute("aria-pressed", String(x === b)); loadConvs();
+});
+let searchT; $("iSearch").addEventListener("input", () => { clearTimeout(searchT); searchT = setTimeout(() => { S.q = $("iSearch").value.trim(); loadConvs(); }, 300); });
+$("iItems").addEventListener("click", (e) => { const b = e.target.closest(".iitem"); if (b) selectConv(+b.dataset.id); });
+$("backBtn").onclick = () => { S.sel = null; $("inbox").classList.remove("has-sel"); $("iHdr").hidden = true; $("aComp").hidden = true;
+  $("aThread").innerHTML = '<div class="aiempty">Chọn một cuộc trò chuyện để xem và trả lời.</div>'; renderConvs(); };
+
+async function selectConv(id){
+  S.sel = id; S.conv = null; S.msgs = []; S.lastId = 0; $("aq").value = "";
+  $("inbox").classList.add("has-sel"); $("iHdr").hidden = false; $("aComp").hidden = false;
+  renderConvs(); await pollThread(true); markSeenA(id); renderConvs();
+}
+async function pollThread(force){
+  if (!S.sel) return; const id = S.sel;
+  const r = await guard(() => api(`/api/admin/conversations/${id}/messages?after=${S.lastId}`)); if (!r || id !== S.sel) return;
+  S.conv = r.conversation; renderHeader();
+  if (r.messages.length){ S.msgs.push(...r.messages); S.lastId = r.messages[r.messages.length - 1].id; markSeenA(id); renderThread(true); }
+  else if (force) renderThread(true);
+}
+function renderHeader(){
+  const c = S.conv; if (!c) return;
+  $("iName").textContent = c.zalo_name;
+  $("iSub").textContent = `${c.phone} · ${c.title || ""}`;
+  $("iMode").value = c.ai_mode; $("iDone").hidden = !c.needs_human;
+  $("aNote").textContent = c.ai_active ? "Gửi trả lời tay sẽ tự tắt AI cho cuộc trò chuyện này." : "AI đang tắt cho cuộc trò chuyện này.";
+}
+function renderThread(toEnd){
+  const sc = $("aScroll"); const atBottom = sc.scrollHeight - sc.scrollTop - sc.clientHeight < 80;
+  $("aThread").innerHTML = S.msgs.length ? S.msgs.map(m => messageHtml(m, "admin",
+    `<div class="msgtools">${m.role !== "user" ? `<button data-edit="${m.id}">Sửa</button>` : ""}<button data-delm="${m.id}">Xóa</button></div>`)).join("")
+    : '<div class="aiempty">Chưa có tin nhắn.</div>';
+  if (toEnd || atBottom) sc.scrollTop = sc.scrollHeight;
+}
+$("aThread").addEventListener("click", (e) => {
+  const ed = e.target.closest("[data-edit]"), dl = e.target.closest("[data-delm]");
+  if (ed){
+    const m = S.msgs.find(x => x.id === +ed.dataset.edit); if (!m) return;
+    dialog("Sửa tin nhắn", `<label>Nội dung<textarea id="eText" rows="8" required>${esc(m.text)}</textarea></label>`, async () => {
+      await api(`/api/admin/messages/${m.id}`, { method: "PATCH", body: { text: $("eText").value } });
+      S.msgs = []; S.lastId = 0; await pollThread(true);
+    });
+  }
+  if (dl){
+    if (!confirm("Xóa tin nhắn này? Người dùng cũng sẽ không thấy nữa.")) return;
+    guard(async () => { await api(`/api/admin/messages/${dl.dataset.delm}`, { method: "DELETE" }); S.msgs = S.msgs.filter(x => x.id !== +dl.dataset.delm); renderThread(); });
+  }
+});
+$("iMode").onchange = () => guard(async () => {
+  const v = $("iMode").value; S.conv = await api(`/api/admin/conversations/${S.sel}`, { method: "PATCH", body: { ai_mode: v } });
+  renderHeader(); loadConvs(); toast(v === "off" ? "Đã tắt AI cho cuộc trò chuyện này." : v === "on" ? "Đã bật AI cho cuộc trò chuyện này." : "Theo chế độ mặc định.");
+});
+$("iDone").onclick = () => guard(async () => { S.conv = await api(`/api/admin/conversations/${S.sel}`, { method: "PATCH", body: { needs_human: false } }); renderHeader(); loadConvs(); });
+$("iDel").onclick = () => { if (!confirm("Xóa toàn bộ cuộc trò chuyện này? Không khôi phục được.")) return;
+  guard(async () => { await api(`/api/admin/conversations/${S.sel}`, { method: "DELETE" }); $("backBtn").click(); loadConvs(); toast("Đã xóa."); }); };
+$("aSend").onclick = () => {
+  const text = $("aq").value.trim(); if (!text || !S.sel) return;
+  $("aSend").disabled = true;
+  guard(async () => {
+    const r = await api(`/api/admin/conversations/${S.sel}/reply`, { method: "POST", body: { text } });
+    $("aq").value = ""; if (r.ai_turned_off) toast("Đã gửi. AI đã tắt cho cuộc trò chuyện này.");
+    await pollThread(true); loadConvs();
+  }).finally(() => $("aSend").disabled = false);
+};
+$("aq").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)){ e.preventDefault(); $("aSend").click(); } });
+$("aSuggest").onclick = () => {
+  if (!S.sel) return; const b = $("aSuggest"); b.disabled = true; b.textContent = "Đang gợi ý…";
+  guard(async () => { const r = await api(`/api/admin/conversations/${S.sel}/suggest`, { method: "POST" }); if (r.ok) $("aq").value = r.text; else toast(r.reason); })
+    .finally(() => { b.disabled = false; b.textContent = "Gợi ý bằng AI"; });
+};
+$("gAi").onchange = () => guard(async () => {
+  S.cfg = await api("/api/admin/settings", { method: "PUT", body: { ai_enabled: $("gAi").checked } });
+  toast($("gAi").checked ? "AI tự trả lời: bật." : "AI tự trả lời: tắt. Tin nhắn mới sẽ chờ nhân viên."); loadConvs();
+}).catch(() => { $("gAi").checked = !$("gAi").checked; });
+setInterval(() => { if (document.hidden || $("adminView").hidden || $("t-inbox").hidden) return; loadConvs().catch(() => {}); pollThread(false).catch(() => {}); }, 5000);
+
+/* ---------- Người dùng ---------- */
+async function loadUsers(){
+  const st = await guard(() => api("/api/admin/stats"));
+  if (st) $("stats").innerHTML = [["Người dùng", st.users], ["Cuộc trò chuyện", st.conversations], ["Cần nhân viên", st.needs_human], ["Tài liệu", st.documents]]
+    .map(([l, v]) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`).join("") + (st.llm ? "" : '<div class="stat"><b>Tắt</b><span>Claude API chưa cấu hình</span></div>');
+  S.users = await guard(() => api("/api/admin/users?q=" + encodeURIComponent($("uSearch").value.trim()))) || [];
+  $("uRows").innerHTML = S.users.length ? S.users.map(u => `<tr><td>${esc(u.zalo_name)}</td><td>${esc(u.phone)}</td><td><small>${esc(u.note)}</small></td>
+    <td>${u.conv_count}</td><td><small>${timeAgo(u.last_seen || u.created_at)}</small></td>
+    <td>${u.blocked ? '<span class="pill bad">Đã khóa</span>' : '<span class="pill ok">Hoạt động</span>'}</td>
+    <td><div class="btns"><button class="btn small ghost" data-uconv="${u.id}">Xem chat</button><button class="btn small ghost" data-uedit="${u.id}">Sửa</button>
+    <button class="btn small ghost" data-ublock="${u.id}">${u.blocked ? "Mở khóa" : "Khóa"}</button><button class="btn small danger" data-udel="${u.id}">Xóa</button></div></td></tr>`).join("")
+    : '<tr><td colspan="7" class="note">Chưa có người dùng.</td></tr>';
+}
+let uT; $("uSearch").addEventListener("input", () => { clearTimeout(uT); uT = setTimeout(loadUsers, 300); });
+function userForm(u){
+  return `<label>Tên Zalo<input id="fuName" value="${esc(u?.zalo_name || "")}" required maxlength="80"></label>
+    <label>Số điện thoại<input id="fuPhone" value="${esc(u?.phone || "")}" required inputmode="tel"></label>
+    <label>Ghi chú<textarea id="fuNote" rows="2" maxlength="500">${esc(u?.note || "")}</textarea></label>`;
+}
+$("uAdd").onclick = () => dialog("Thêm người dùng", userForm(null), async () => {
+  await api("/api/admin/users", { method: "POST", body: { zalo_name: $("fuName").value, phone: $("fuPhone").value, note: $("fuNote").value } }); loadUsers(); toast("Đã thêm người dùng.");
+}, "Thêm");
+$("uRows").addEventListener("click", (e) => {
+  const t = e.target.closest("button"); if (!t) return;
+  const id = +(t.dataset.uedit || t.dataset.ublock || t.dataset.udel || t.dataset.uconv); const u = S.users.find(x => x.id === id); if (!u) return;
+  if (t.dataset.uedit) dialog("Sửa người dùng", userForm(u), async () => {
+    await api(`/api/admin/users/${id}`, { method: "PATCH", body: { zalo_name: $("fuName").value, phone: $("fuPhone").value, note: $("fuNote").value } }); loadUsers(); toast("Đã lưu.");
+  });
+  if (t.dataset.ublock) guard(async () => { await api(`/api/admin/users/${id}`, { method: "PATCH", body: { blocked: !u.blocked } }); loadUsers(); toast(u.blocked ? "Đã mở khóa." : "Đã khóa. Người dùng không gửi được tin nữa."); });
+  if (t.dataset.udel){ if (!confirm(`Xóa người dùng ${u.zalo_name} và toàn bộ cuộc trò chuyện của họ? Không khôi phục được.`)) return;
+    guard(async () => { await api(`/api/admin/users/${id}`, { method: "DELETE" }); loadUsers(); toast("Đã xóa."); }); }
+  if (t.dataset.uconv){ $("iSearch").value = u.phone; S.q = u.phone; $("tabs").querySelector('[data-tab="inbox"]').click(); }
+});
+
+/* ---------- Kiến thức ---------- */
+async function loadDocs(){
+  S.docs = await guard(() => api("/api/admin/documents")) || [];
+  const total = S.docs.reduce((n, d) => n + d.chunk_count, 0);
+  $("docSummary").textContent = S.docs.length ? `${S.docs.length} tài liệu, ${total} đoạn.` : "Chưa có tài liệu.";
+  $("docRows").innerHTML = S.docs.map(d => `<tr><td>${esc(d.title)}<br><code>${esc(d.doc_id)}</code></td><td>${esc(d.scope)}</td><td>v${d.version}</td>
+    <td>${d.chunk_count}</td><td><small>${new Date(d.updated_at).toLocaleDateString("vi-VN")}</small></td>
+    <td><div class="btns"><button class="btn small ghost" data-dview="${esc(d.doc_id)}">Xem đoạn</button><button class="btn small danger" data-ddel="${esc(d.doc_id)}">Xóa</button></div></td></tr>`).join("");
+}
+function setFiles(list){
+  S.files = [...list].filter(f => /\.(txt|md|markdown|docx|pdf)$/i.test(f.name));
+  $("picked").textContent = S.files.map(f => f.name).join(", ");
+  $("ingestBtn").disabled = !S.files.length;
+  const single = S.files.length === 1; $("fDocId").disabled = !single; $("fTitle").disabled = !single;
+}
+$("pickBtn").onclick = () => $("fileIn").click();
+$("fileIn").onchange = (e) => setFiles(e.target.files);
+const drop = $("drop");
+drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("over"); });
+drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("over"); setFiles(e.dataTransfer.files); });
+$("ingestBtn").onclick = async () => {
+  const fd = new FormData(); for (const f of S.files) fd.append("files", f);
+  fd.append("doc_id", $("fDocId").value); fd.append("title", $("fTitle").value);
+  fd.append("scope", $("fScope").value || "chung"); fd.append("version", $("fVersion").value || "1");
+  $("ingestBtn").disabled = true; $("ingestProg").textContent = "Đang nạp…";
+  try{
+    const r = await api("/api/admin/documents", { method: "POST", body: fd });
+    $("ingestProg").textContent = `Đã nạp ${r.ok.length} tài liệu.` + (r.errors.length ? " Lỗi: " + r.errors.map(e => `${e.file} (${e.error})`).join("; ") : "");
+    S.files = []; $("fileIn").value = ""; $("picked").textContent = ""; $("fDocId").value = ""; $("fTitle").value = ""; $("fDocId").disabled = false; $("fTitle").disabled = false;
+    loadDocs();
+  }catch(e){ if (e.status === 401) return showLogin(); $("ingestProg").textContent = e.message; $("ingestBtn").disabled = false; }
+};
+$("docRows").addEventListener("click", async (e) => {
+  const v = e.target.closest("[data-dview]"), d = e.target.closest("[data-ddel]");
+  if (v){ const rows = await guard(() => api(`/api/admin/documents/${encodeURIComponent(v.dataset.dview)}/chunks`)); if (!rows) return;
+    dialog("Các đoạn của " + v.dataset.dview, `<div style="max-height:60vh;overflow:auto">${rows.map(r => `<div class="src"><b>${esc(r.id)}</b><div>${esc(r.text)}</div></div>`).join("")}</div>`, async () => {}, "Đóng"); }
+  if (d){ if (!confirm(`Xóa tài liệu ${d.dataset.ddel}?`)) return; guard(async () => { await api(`/api/admin/documents/${encodeURIComponent(d.dataset.ddel)}`, { method: "DELETE" }); loadDocs(); toast("Đã xóa tài liệu."); }); }
+});
+
+/* ---------- Quản trị viên ---------- */
+async function loadAdmins(){
+  S.admins = await guard(() => api("/api/admin/admins")) || [];
+  $("adRows").innerHTML = S.admins.map(a => `<tr><td>${esc(a.username)}${a.id === S.me.id ? " <small>(bạn)</small>" : ""}</td><td>${esc(a.display_name)}</td>
+    <td><small>${a.last_login ? new Date(a.last_login).toLocaleString("vi-VN") : "Chưa đăng nhập"}</small></td>
+    <td>${a.active ? '<span class="pill ok">Hoạt động</span>' : '<span class="pill bad">Đã khóa</span>'}</td>
+    <td><div class="btns"><button class="btn small ghost" data-aedit="${a.id}">Sửa</button>${a.id !== S.me.id ? `<button class="btn small ghost" data-aact="${a.id}">${a.active ? "Khóa" : "Mở khóa"}</button><button class="btn small danger" data-adel="${a.id}">Xóa</button>` : ""}</div></td></tr>`).join("");
+}
+$("aAdd").onclick = () => dialog("Thêm quản trị viên",
+  `<label>Tên đăng nhập (chữ, số, dấu . _ -)<input id="faUser" required pattern="[A-Za-z0-9_.\\-]{3,60}"></label>
+   <label>Tên hiển thị<input id="faName" maxlength="80"></label>
+   <label>Mật khẩu (ít nhất 8 ký tự)<input id="faPass" type="password" minlength="8" required autocomplete="new-password"></label>`,
+  async () => { await api("/api/admin/admins", { method: "POST", body: { username: $("faUser").value, display_name: $("faName").value, password: $("faPass").value } }); loadAdmins(); toast("Đã thêm quản trị viên."); }, "Thêm");
+$("adRows").addEventListener("click", (e) => {
+  const t = e.target.closest("button"); if (!t) return;
+  const id = +(t.dataset.aedit || t.dataset.aact || t.dataset.adel); const a = S.admins.find(x => x.id === id); if (!a) return;
+  if (t.dataset.aedit) dialog("Sửa quản trị viên " + a.username,
+    `<label>Tên hiển thị<input id="faName" value="${esc(a.display_name)}" maxlength="80"></label>
+     <label>Mật khẩu mới (để trống nếu không đổi)<input id="faPass" type="password" minlength="8" autocomplete="new-password"></label>`,
+    async () => { const body = { display_name: $("faName").value }; if ($("faPass").value) body.password = $("faPass").value;
+      await api(`/api/admin/admins/${id}`, { method: "PATCH", body }); loadAdmins(); toast("Đã lưu."); });
+  if (t.dataset.aact) guard(async () => { await api(`/api/admin/admins/${id}`, { method: "PATCH", body: { active: !a.active } }); loadAdmins(); });
+  if (t.dataset.adel){ if (!confirm(`Xóa quản trị viên ${a.username}?`)) return; guard(async () => { await api(`/api/admin/admins/${id}`, { method: "DELETE" }); loadAdmins(); }); }
+});
+
+/* ---------- Cài đặt ---------- */
+async function loadSettings(){
+  const c = await guard(() => api("/api/admin/settings")); if (!c) return; S.cfg = c;
+  for (const el of document.querySelectorAll(".appName")) el.textContent = c.name;
+  $("gAi").checked = !!c.ai_enabled;
+  $("sName").value = c.name; $("sThreshold").value = c.threshold; $("sTopK").value = c.top_k; $("sWelcome").value = c.welcome;
+  $("sSuggest").value = (c.suggest || []).join("\n"); $("sEscalate").value = c.escalate; $("sWait").value = c.wait; $("sAiError").value = c.ai_error;
+}
+$("saveSettings").onclick = () => guard(async () => {
+  await api("/api/admin/settings", { method: "PUT", body: {
+    name: $("sName").value.trim() || "Trợ lý tri thức", threshold: parseFloat($("sThreshold").value) || 0, top_k: parseInt($("sTopK").value, 10) || 5,
+    welcome: $("sWelcome").value.trim(), suggest: $("sSuggest").value, escalate: $("sEscalate").value.trim(), wait: $("sWait").value.trim(), ai_error: $("sAiError").value.trim() } });
+  $("settingsProg").textContent = "Đã lưu."; loadSettings();
+}).catch(() => {});
+
+/* ---------- Khởi động ---------- */
+(async () => { try{ S.me = await api("/api/admin/me"); showApp(); }catch(e){ showLogin(); } })();
+})();
+</script>
+</body>
+</html>
